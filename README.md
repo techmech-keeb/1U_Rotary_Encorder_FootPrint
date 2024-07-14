@@ -9,3 +9,4 @@ FootPrint for rotary encoders (with switch function) whose mounting dimensions a
 - This is an exclusive Footprint for rotary encoders manufactured by Skyloong, which are distributed mainly by Aliexpress and other companies.
 (The data is personally created based on actual size measurements and is in no way affiliated with Skyloong.)
 https://github.com/JZ-Skyloong/Skyloong_Components/tree/main
+
