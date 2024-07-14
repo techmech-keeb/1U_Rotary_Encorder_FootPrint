@@ -5,6 +5,8 @@ FootPrint for rotary encoders (with switch function) whose mounting dimensions a
 ## How to use
 
 - Available for Kicad 8.0 or later.
+  - 1u_rotaryencoder_switch.kicad_sym ... Symbol data for schematics
+  - 1U_Rotary_Encoder_Switch.kicad_mod ... FootPrint
 - FootPrints can be installed on top of CherryMX switch footprints (HotSwap compatible) to enable exclusive use of keyswitches and rotary encoders.
 - This is an exclusive Footprint for rotary encoders manufactured by Skyloong, which are distributed mainly by Aliexpress and other companies.
 (The data is personally created based on actual size measurements and is in no way affiliated with Skyloong.)
