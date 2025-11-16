@@ -1,17 +1,22 @@
-# 1U Rotary Encorder Switch FootPrint
+# 1U Rotary Encoder Switch FootPrint
 
-FootPrint for rotary encoders (with switch function) whose mounting dimensions are compatible with CherryMX compatible switches widely used in mechanical keyboards.
+FootPrint for rotary Rotary Encoders (with switch function) whose mounting dimensions are compatible with CherryMX compatible switches widely used in mechanical keyboards.
 
 ## How to use
 
-- Available for Kicad 8.0 or later.
-  - 1u_rotaryencoder_switch.kicad_sym ... Symbol data for schematics
-  - 1U_Rotary_Encoder_Switch.kicad_mod ... FootPrint
-- FootPrints can be installed on top of CherryMX switch footprints (HotSwap compatible) to enable exclusive use of keyswitches and rotary encoders.
-- This is an exclusive Footprint for rotary encoders manufactured by Skyloong, which are distributed mainly by Aliexpress and other companies.
-(The data is personally created based on actual size measurements and is in no way affiliated with Skyloong.)
-https://github.com/JZ-Skyloong/Skyloong_Components/tree/main
-- ENIG (Electro-less Nickel / Immersion Gold) is recommended for the surface treatment of the PCB when manufactured.
+Compatible with KiCad 8.0 or later.
+
+1u_rotaryencoder_switch.kicad_sym: Symbol data for schematics
+
+1U_Rotary_Encoder_Switch.kicad_mod: Footprint data
+
+The footprint can be placed directly on top of Cherry MX switch footprints (hotswap-compatible), allowing you to choose either a keyswitch or a rotary encoder in the same position.
+
+This footprint is designed for rotary encoders manufactured by Skyloong, commonly available on AliExpress and similar platforms.
+(The footprint was created independently based on actual measurements and is not affiliated with Skyloong.)
+Reference: https://github.com/JZ-Skyloong/Skyloong_Components/tree/main
+
+For PCB manufacturing, ENIG (Electroless Nickel / Immersion Gold) surface finish is recommended.
  
 ![Cover Image](Resources/PXL_20240711_141406034.jpg)
 
