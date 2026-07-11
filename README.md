@@ -70,6 +70,86 @@ See the datasheet for electrical details and timing.
 - For PCB manufacturing, an ENIG (Electroless Nickel / Immersion Gold)
   surface finish is recommended.
 
+## Firmware example (QMK)
+
+The push switch of this encoder shares its common terminal **C** with
+the rotary contacts, and QMK's encoder driver requires C to be wired to
+ground. As a result the push switch **cannot** be wired into the key
+matrix as an ordinary diode + row × column intersection — one side of
+the switch is always GND.
+
+A zero-custom-code pattern that works around this (proven on the OLSK60
+keyboard shown above) is to detect **E** as a direct active-low input,
+but fold it into the normal matrix scan as a *dedicated row*. The
+official QMK documentation covers encoder rotation only and does not
+show a recipe for this case; the alternatives — `DIRECT_PINS` (which is
+all-or-nothing for the whole board) or custom `matrix_scan` code — are
+both more invasive.
+
+### Wiring
+
+| Encoder pad | Connect to |
+|---|---|
+| 2 (A) / 1 (B) | MCU pins → `pin_a` / `pin_b` (swap the two to flip direction) |
+| 4 (C) | GND |
+| 3 (E) | one **dedicated row input pin** of the matrix |
+
+### keyboard.json
+
+```jsonc
+{
+    "encoder": {
+        "enabled": true,
+        "rotary": [
+            {"pin_a": "GP15", "pin_b": "GP14", "resolution": 4}
+        ]
+    },
+    "matrix_pins": {
+        "rows": ["GP8", "GP9", "GP10", "GP11", "GP12", "GP23"],
+        "cols": ["GP0", "GP1", "..."]
+    },
+    "layouts": {
+        "LAYOUT": {
+            "layout": [
+                {"matrix": [0, 0], "x": 0, "y": 0},
+                {"matrix": [5, 0], "x": 15.5, "y": 4}
+            ]
+        }
+    }
+}
+```
+
+The last row (`GP23` here) exists *only* for the encoder push switch.
+Rotation is assigned with a standard `encoder_map` in the keymap:
+
+```c
+#if defined(ENCODER_MAP_ENABLE)
+const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
+    [0] = {ENCODER_CCW_CW(KC_VOLD, KC_VOLU)},
+};
+#endif
+```
+
+### How it works
+
+Because the far side of the switch is ground (through C), pressing it
+pulls the dedicated row low during **every** column strobe. Define
+exactly one layout position on that row — the column index is arbitrary
+and no extra column pin is needed; every other position on the row has
+no keycode (`KC_NO`) and is ignored. The push switch then behaves as a
+completely normal key: debounced by the stock matrix code and
+remappable in VIA / Remap / Vial, without a single line of custom C.
+
+### Trade-offs
+
+- Keep the dedicated row exclusive. Any other key wired to it would
+  register together with the encoder push — use one row per direct
+  switch, at a cost of one GPIO each.
+- Matrix testers will show the whole row active while pressed
+  (cosmetic; the keymap only fires the one defined position).
+- The extra row slightly grows the dynamic keymap storage
+  (`columns × layers × 2` bytes).
+
 ## License
 
 Distributed under the
@@ -135,6 +215,49 @@ A/B 相はコモン **C** 基準の直交(クアドラチャ)出力です。電�
 - MX(ホットスワップ)フットプリントに重ねて使う前提のため、シルクは
   意図的に空にしています。
 - 基板製造時は ENIG(無電解ニッケル/金フラッシュ)表面処理を推奨します。
+
+### ファームウェア実装例(QMK)
+
+このエンコーダの押し込みスイッチはコモン端子 **C** を回転接点と共有して
+おり、QMK のエンコーダドライバは C を GND に接続することを要求します。
+そのため押し込みスイッチを通常の「ダイオード+行×列の交点」としてキー
+マトリクスに組み込むことはできません(スイッチの片側が常に GND のため)。
+
+これを回避するカスタムコード不要のパターン(上の写真の OLSK60 で実証済み)
+が、「**E** をアクティブ Low のダイレクト入力として検出しつつ、**専用行**
+としてマトリクススキャンに取り込む」方法です。QMK 公式ドキュメントは回転
+のみを扱っており、このケースのレシピはありません。代替手段の `DIRECT_PINS`
+(基板全体が対象になる)やカスタム `matrix_scan` コードは、いずれもこの
+パターンより大掛かりになります。
+
+#### 配線
+
+| エンコーダパッド | 接続先 |
+|---|---|
+| 2 (A) / 1 (B) | MCU ピン → `pin_a` / `pin_b`(入れ替えると回転方向が反転) |
+| 4 (C) | GND |
+| 3 (E) | マトリクスの**専用行の入力ピン** |
+
+設定は英語セクションの `keyboard.json` / `encoder_map` の例をそのまま
+使えます。最後の行(例では `GP23`)は押し込みスイッチ専用です。
+
+#### 動作原理
+
+スイッチの反対側が(C 経由で)GND のため、押すと専用行はどの列のスト
+ローブ中でも Low になります。その行にレイアウト位置を**1つだけ**定義して
+ください(列番号は任意で、列ピンの追加も不要です)。行内の他の位置は
+キーコード無し(`KC_NO`)として無視されます。これにより押し込みスイッチは
+完全に通常のキーとして振る舞い、標準のマトリクスコードでデバウンスされ、
+VIA / Remap / Vial で再割り当てできます。カスタム C コードは1行も不要です。
+
+#### トレードオフ
+
+- 専用行は専有を保つこと。同じ行に他のキーを配線すると押し込みと同時に
+  反応します。ダイレクトスイッチ1個につき1行(=GPIO 1本)使います。
+- マトリクステスターでは押下中に行全体が点灯します(表示上のみ。キーマップ
+  が発火するのは定義した1位置だけです)。
+- 行が増える分、ダイナミックキーマップ領域がわずかに増えます
+  (列数 × レイヤー数 × 2 バイト)。
 
 ### ライセンス
 
