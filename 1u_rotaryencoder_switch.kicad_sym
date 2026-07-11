@@ -24,7 +24,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "1U_Rotary_Encoder_Switch:1U_Rotary_Encoder_Switch"
 			(at 1.27 -24.13 0)
 			(effects
 				(font
@@ -60,7 +60,7 @@
 				(hide yes)
 			)
 		)
-		(property "ki_fp_filters" "RotaryEncoder*Switch*"
+		(property "ki_fp_filters" "*Rotary*Encoder*Switch*"
 			(at 0 0 0)
 			(effects
 				(font
